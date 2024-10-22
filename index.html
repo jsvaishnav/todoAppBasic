@@ -1,0 +1,122 @@
+<head>
+    <title>
+      TODO app
+    </title>
+</head>
+        <script>
+            
+function deleteDone()
+{
+    console.log("done delete");
+   
+}
+            function deleteTodo(id, divId)
+            {
+                console.log();
+                const elementToDelete = document.getElementById(divId);
+   
+                if (elementToDelete) {
+        elementToDelete.remove(); // Remove the element from the DOM
+    }
+                fetch("http://localhost:3000/todos/" +id,
+                {
+                    method:"DELETE",  
+                    headers:{
+                        "Content-Type": "application/json"}
+                }).then(deleteDone)   
+            }
+            function todosCallback(data){ 
+                console.log(data); 
+                var parentElement=document.getElementById("mainArena");
+                //parentElement.innerHTML=JSON.stringify(data);    
+                for(var i=0; i<data.length; i++)
+            {
+                var childElement=document.createElement("div");
+                var randomId = Math.floor(Math.random() * 10000); // Adjust the range as needed
+childElement.id = randomId;
+
+              var grandChildElement1=document.createElement("span");
+              grandChildElement1.innerHTML=data[i].title
+
+              var grandChildElement2 =document.createElement("span");
+              grandChildElement2.innerHTML=data[i].description
+  
+              
+              var grandChildElement3 =document.createElement("button");
+              grandChildElement3.innerHTML="Delete"
+              grandChildElement3.setAttribute("onclick","deleteTodo(" + data[i].id + "," + randomId + ")")
+
+              childElement.appendChild(grandChildElement1)
+              childElement.appendChild(grandChildElement2)
+              childElement.appendChild(grandChildElement3)
+
+                parentElement.appendChild(childElement); 
+            }
+            }
+            function getDataCallback(resp)
+            {
+                resp.json().then(todosCallback);
+            }
+            function getData()
+            { 
+                fetch("http://localhost:3000/todos",
+                {
+                    method:"GET", 
+                }).then(getDataCallback)   
+            }
+            getData(); 
+            function parsedResponse(data)
+            {
+                console.log(data);
+                var parentElement=document.getElementById("mainArena"); 
+                var childElement=document.createElement("div");
+  
+var grandChildElement1=document.createElement("span");
+grandChildElement1.innerHTML=data.title
+
+var grandChildElement2 =document.createElement("span");
+grandChildElement2.innerHTML=data.description
+
+
+var grandChildElement3 =document.createElement("button");
+grandChildElement3.innerHTML="Delete"
+
+childElement.appendChild(grandChildElement1) 
+childElement.appendChild(grandChildElement2)
+childElement.appendChild(grandChildElement3)
+
+  parentElement.appendChild(childElement);   
+            }
+            function callback(resp)
+            {
+                resp.json().then(parsedResponse);
+            }
+            function onPress(){
+                var title=document.getElementById("title1").value;
+                var description=document.getElementById("description").value;
+                fetch("http://localhost:3000/todos", {
+                    method:"POST", 
+                    body:JSON.stringify({
+                        title:title,
+                        description:description
+                    }),
+                 headers:{
+                    "Content-Type": "application/json"}
+                 }).then(callback)
+               
+            }
+        </script>
+   
+<body>
+    TODO title
+    <input type="text" id="title1"></input>
+    <br><br>
+    TODO description
+    <input type="text" id="description"></input>
+    <br><br>
+    <button onclick="onPress()">send todo </button> 
+    <div id="mainArena">
+        
+    </div>
+</body> 
+   
